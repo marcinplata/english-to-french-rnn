@@ -1,12 +1,12 @@
 from models.Model import Model as RNNModel
 from keras.losses import sparse_categorical_crossentropy
-from keras.layers import GRU, Dense, TimeDistributed
+from keras.layers import Embedding, GRU, Dense, TimeDistributed
 from keras.layers import Activation
 from keras.optimizers import Adam
 from keras.models import Sequential
 
 
-class Simple(RNNModel):
+class Embedd(RNNModel):
 
     compile_args = {
         "loss": sparse_categorical_crossentropy,
@@ -21,7 +21,7 @@ class Simple(RNNModel):
     }
 
     input_shape = None
-    output_sequence_length = None
+    english_vocab_size = None
     french_vocab_size = None
 
     def __init__(self, en_preprocess, fr_preprocess):
@@ -29,20 +29,18 @@ class Simple(RNNModel):
 
         super().__init__(en_preprocess, fr_preprocess)
 
-        self.en_data = self.en_data.reshape((*self.en_data.shape, 1))
+        # self.en_data = self.en_data.reshape((*self.en_data.shape, 1))
         self.fr_data = self.fr_data.reshape((*self.fr_data.shape, 1))
 
-        self.input_shape = self.en_data.shape[1:]
-        self.output_sequence_length = self.fr_data.shape[1]
+        self.input_shape = self.en_data.shape[1]
+        self.english_vocab_size = len(self.en_preprocess.tokenizer.word_index) + 1
         self.french_vocab_size = len(self.fr_preprocess.tokenizer.word_index) + 1
 
     def build_model(self):
         self.model = Sequential()
-        self.model.add(GRU(self.output_sequence_length,
-                           input_shape=self.input_shape,
-                           return_sequences=True
-                           )
-                       )
+        self.model.add(Embedding(self.english_vocab_size, 30, input_length=self.input_shape))
+        self.model.add(GRU(100, return_sequences=True))
+
         self.model.add(TimeDistributed(Dense(self.french_vocab_size)))
         self.model.add(Activation("softmax"))
 
@@ -51,6 +49,3 @@ class Simple(RNNModel):
     def fit_model(self):
         self.model.fit(self.en_data, self.fr_data, **self.fit_args)
 
-    def predict(self, sentences):
-        sentences = sentences.reshape((*sentences.shape, 1))
-        return self.model.predict(sentences, len(sentences))

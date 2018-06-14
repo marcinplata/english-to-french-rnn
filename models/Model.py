@@ -9,6 +9,8 @@ class Model:
     fr_data = None
 
     def __init__(self, en_preprocess, fr_preprocess):
+        self.en_data = en_preprocess.get_preprocessed_sequences()
+        self.fr_data = fr_preprocess.get_preprocessed_sequences()
         self.en_preprocess = en_preprocess
         self.fr_preprocess = fr_preprocess
 

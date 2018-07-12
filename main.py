@@ -9,7 +9,7 @@ from postprocess.to_text import to_text
 from os.path import join
 
 # choose model
-model = "commongit "
+model = "common"
 
 Models = {
     "simple": Simple,
@@ -45,11 +45,11 @@ rnn.build_model()
 rnn.summary()
 
 # fit model and save
-rnn.fit_model()
-rnn.save_model_weights(join("weights", model_name+".md5"))
+# rnn.fit_model()
+# rnn.save_model_weights(join("weights", model_name+".md5"))
 
 # or load model
-# rnn.load_model_weights(join("weights", model_name+".md5"))
+rnn.load_model_weights(join("weights", model_name+".md5"))
 
 # predictions (test of 5 head english sentences)
 test_data = Preprocess(en_sentences[:5])

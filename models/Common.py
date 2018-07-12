@@ -1,6 +1,6 @@
 from models.Model import Model as RNNModel
 from keras.losses import sparse_categorical_crossentropy
-from keras.layers import Embedding, LSTM, Dense, Bidirectional, RepeatVector, Dropout, GRUCell, RNN
+from keras.layers import Embedding, GRU, Dense, Bidirectional, RepeatVector, Dropout, GRUCell, RNN
 from keras.layers import Activation
 from keras.optimizers import Adam
 from keras.models import Sequential
@@ -10,14 +10,14 @@ class Common(RNNModel):
 
     compile_args = {
         "loss": sparse_categorical_crossentropy,
-        "optimizer": Adam(0.05),
+        "optimizer": Adam(0.007),
         "metrics": ['accuracy']
     }
 
     fit_args = {
         "batch_size": 1024,
-        "epochs": 1,
-        "validation_split": 0.2
+        "epochs": 25,
+        "validation_split": 0.1
     }
 
     input_shape = None
@@ -38,15 +38,13 @@ class Common(RNNModel):
 
     def build_model(self):
         self.model = Sequential()
-        self.model.add(Embedding(self.english_vocab_size, 50, input_length=self.input_shape))
+        self.model.add(Embedding(self.english_vocab_size, 60, input_length=self.input_shape))
 
-        self.model.add(Bidirectional(LSTM(50)))
+        self.model.add(GRU(60))
 
-        self.model.add(Activation("relu"))
         self.model.add(RepeatVector(self.output_sequence_length))
-        self.model.add(Dropout(0.2))
 
-        self.model.add(RNN(GRUCell(30), return_sequences=True))
+        self.model.add(Bidirectional(GRU(70, return_sequences=True)))
 
         self.model.add(Dense(self.french_vocab_size))
         self.model.add(Activation("softmax"))

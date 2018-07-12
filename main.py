@@ -9,7 +9,7 @@ from postprocess.to_text import to_text
 from os.path import join
 
 # choose model
-model = "embedding"
+model = "commongit "
 
 Models = {
     "simple": Simple,

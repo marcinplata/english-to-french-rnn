@@ -16,8 +16,8 @@ class Simple(RNNModel):
 
     fit_args = {
         "batch_size": 1024,
-        "epochs": 1,
-        "validation_split": 0.2
+        "epochs": 20,
+        "validation_split": 0.1
     }
 
     input_shape = None
@@ -38,7 +38,7 @@ class Simple(RNNModel):
 
     def build_model(self):
         self.model = Sequential()
-        self.model.add(GRU(self.output_sequence_length,
+        self.model.add(GRU(100,
                            input_shape=self.input_shape,
                            return_sequences=True
                            )
